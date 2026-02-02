@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const MongoStore = require('connect-mongo').default;
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
 const categoryRoute = require('./routes/categoryRoute');
@@ -18,10 +20,31 @@ mongoose
 app.set('view engine', 'ejs');
 
 //MIDDLEWARE
+
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    secret: 'my_keyboard_cat', // Buradaki texti değiştireceğiz.
+    resave: false,
+    saveUninitialized: true,
+    store: MongoStore.create({
+      mongoUrl: 'mongodb://localhost:27017/smartedu-db',
+    }),
+  })
+);
+app.use((req, res, next) => {
+  res.locals.userIN = req.session.userID;
+  next();
+});
+
 //ROUTES
+app.use((req, res, next) => {
+  userIN = req.session.userID;
+  next();
+});
+
 app.use('/courses', courseRoute);
 app.use('/', pageRoute);
 app.use('/categories', categoryRoute);
