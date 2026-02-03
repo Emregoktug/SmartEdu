@@ -4,8 +4,11 @@ const authMiddleware = require('../middlewares/authMiddleware');
 
 const router = express.Router();
 
-router.route('/signup').post(authController.createUser); // http://localhost:3000/categories
-router.route('/login').post(authController.loginUser);
+router.post('/signup', authController.createUser);
+router.post('/login', authController.loginUser);
+
+router.get('/dashboard', authMiddleware, authController.getDashboardPage);
+
 router.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.redirect('/');
