@@ -1,42 +1,58 @@
 const bcrypt = require('bcrypt');
+const { validationResult } = require('express-validator');
 const User = require('../models/User');
 const Category = require('../models/Category');
 const Course = require('../models/Course');
+
+// CREATE USER
 exports.createUser = async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    // VALIDATION
+    const errors = validationResult(req);
 
-    res.status(201).redirect('/login');
+    if (!errors.isEmpty()) {
+      errors.array().forEach(err => {
+        req.flash('error', err.msg);
+      });
+
+      return res.status(400).redirect('/register');
+    }
+
+    // USER CREATE
+    await User.create(req.body);
+
+    return res.status(201).redirect('/login');
   } catch (error) {
-    console.log(error);
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    console.log('CREATE USER ERROR:', error);
+    return res.status(400).redirect('/register');
   }
 };
 
+// LOGIN USER
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Kullanıcı var mı
+    // USER VAR MI
     const user = await User.findOne({ email });
+
     if (!user) {
-      return res.status(401).send('Email veya şifre hatalı');
+      req.flash('error', 'User does not exist!');
+      return res.status(400).redirect('/login');
     }
 
-    // 2. Şifre doğru mu
+    // PASSWORD DOĞRU MU
     const same = await bcrypt.compare(password, user.password);
+
     if (!same) {
-      return res.status(401).send('Email veya şifre hatalı');
+      req.flash('error', 'Your password is not correct!');
+      return res.status(400).redirect('/login');
     }
 
-    // 3. USER SESSION (DOĞRU YER)
+    // SESSION
     req.session.userID = user._id;
     req.session.role = user.role;
 
-    // 4. Session KAYDEDİLDİKTEN SONRA redirect
     req.session.save(() => {
       return res.redirect('/users/dashboard');
     });
@@ -46,16 +62,34 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({ _id: req.session.userID }).populate(
-    'courses'
-  );
-  const categories = await Category.find();
-  const courses = await Course.find({ user: req.session.userID });
-  res.status(200).render('dashboard', {
-    page_name: 'dashboard',
-    user,
-    categories,
-    courses,
+// LOGOUT
+exports.logoutUser = (req, res) => {
+  req.session.destroy(() => {
+    res.redirect('/');
   });
+};
+
+// DASHBOARD
+exports.getDashboardPage = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      _id: req.session.userID,
+    }).populate('courses');
+
+    const categories = await Category.find();
+
+    const courses = await Course.find({
+      user: req.session.userID,
+    });
+
+    res.status(200).render('dashboard', {
+      page_name: 'dashboard',
+      user,
+      categories,
+      courses,
+    });
+  } catch (error) {
+    console.log('DASHBOARD ERROR:', error);
+    res.redirect('/');
+  }
 };
