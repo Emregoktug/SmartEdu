@@ -107,18 +107,24 @@ exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     await Course.deleteMany({ user: req.params.id });
-
+    req.flash('success', 'User deleted successfully!');
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'User could not be deleted!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
 exports.createUserByAdmin = async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      errors.array().forEach(err => {
+        req.flash('error', err.msg);
+      });
+      return res.status(400).redirect('/users/dashboard');
+    }
+
     const { name, email, password, role } = req.body;
     await User.create({ name, email, password, role });
     req.flash('success', 'User created successfully!');

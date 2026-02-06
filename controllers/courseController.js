@@ -101,13 +101,11 @@ exports.enrollCourse = async (req, res) => {
     const user = await User.findById(req.session.userID);
     user.courses.push(req.body.course_id);
     await user.save();
-
+    req.flash('success', 'Course enrolled successfully!');
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'Could not enroll to course!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
@@ -116,28 +114,23 @@ exports.releaseCourse = async (req, res) => {
     const user = await User.findById(req.session.userID);
     await user.courses.pull({ _id: req.body.course_id });
     await user.save();
+    req.flash('success', 'Course released successfully!');
 
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'Could not release course!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
 exports.deleteCourse = async (req, res) => {
   try {
     const course = await Course.findOneAndDelete({ slug: req.params.slug });
-
-    req.flash('error', `${course.name} has been removed successfully`);
-
+    req.flash('success', `${course.name} has been deleted successfully!`);
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'Course could not be deleted!');
+    res.status(400).redirect('/users/dashboard');
   }
 };
 
@@ -147,14 +140,11 @@ exports.updateCourse = async (req, res) => {
     course.name = req.body.name;
     course.description = req.body.description;
     course.category = req.body.category;
-
     course.save();
-
+    req.flash('success', `${course.name} has been updated successfully!`);
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
-    res.status(400).json({
-      status: 'fail',
-      error,
-    });
+    req.flash('error', 'Course could not be updated!');
+    res.status(400).redirect('/users/dashboard');
   }
 };

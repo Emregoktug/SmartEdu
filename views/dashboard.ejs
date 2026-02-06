@@ -16,6 +16,25 @@
 
 				<div id="overviews" class="section wb">
 					<div class="container">
+												<!-- Flash Messages -->
+						<% if (flashMessages) { %>
+							<% if (flashMessages.success) { %>
+								<div class="alert alert-success alert-dismissible fade show" role="alert">
+									<%= flashMessages.success %>
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+							<% } else if (flashMessages.error) { %>
+								<div class="alert alert-danger alert-dismissible fade show" role="alert">
+									<%= flashMessages.error %>
+									<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+							<% } %>
+						<% } %>
+
 						<div class="row">
 							<div class="col-lg-12 blog-post-single">
 								<div class="blog-author">
@@ -251,195 +270,231 @@
 
 			<% } %>
 
-			<% if(user.role==='admin' ) { %>
+						<% if(user.role==='admin' ) { %>
 
-				<div class="all-title-box">
-					<div class="container text-center">
-						<h1>
-							<%= user.name %><span class="m_1">ADMIN</span>
-						</h1>
+	<div class="all-title-box" style="background-color: #f5a623;">
+		<div class="container text-center">
+			<h1 class="text-white">
+				<%= user.name %><span class="m_1">ADMIN</span>
+			</h1>
+		</div>
+	</div>
+
+	<div id="overviews" class="section wb">
+		<div class="container">
+
+						<!-- Flash Messages -->
+			<% if (flashMessages) { %>
+				<% if (flashMessages.success) { %>
+					<div class="alert alert-success alert-dismissible fade show" role="alert">
+						<%= flashMessages.success %>
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
-				</div>
-
-				<div id="overviews" class="section wb">
-					<div class="container">
-						<div class="row">
-							<div class="col-lg-12 blog-post-single">
-								<div class="blog-author">
-									<div class="author-bio">
-										<h3 class="author_name"><a href="#"> Courses Enrolled by:  <%= user.name %></a></h3>
-
-									</div>
-								</div>
-
-							</div><!-- end col -->
-						</div><!-- end row -->
-
-						<div class="row mt-5">
-							<h2>Users</h2>
-							<table class="table">
-								<thead>
-								  <tr>
-									<th scope="col">ID#</th>
-									<th scope="col">Email</th>
-									<th scope="col">Role</th>
-									<th scope="col">Add</th>
-									<th scope="col">Delete</th>
-								  </tr>
-								</thead>
-								<tbody>
-							<% for (let i=0; i< users.length; i++) { %>
-								  <tr>
-									<th scope="row"><%=users[i]._id %></th>
-									<td><%=users[i].email %></td>
-									<td><%=users[i].role %></td>
-									<td><button class="btn btn-lg btn-warning rounded-0 text-white" href="#"
-                    					data-toggle="modal" data-target="#addUser"><span>
-                        				ADD</span></button></td>
-
-									<td>
-  <% if(users[i]._id.toString() !== user._id.toString()) { %>
-    <a href="/users/<%= users[i]._id %>?_method=DELETE"
-      onclick="return confirm('ARE YOU SURE')"
-      class="btn btn-danger rounded-0 text-white"><span>DELETE</span></a>
-  <% } else { %>
-    <span class="btn btn-secondary rounded-0 text-white disabled"><span>YOU</span></span>
-  <% } %>
-</td>
-
-							<% } %>
-								</tbody>
-							  </table>
-
-						</div><!-- end row -->
-						<div class="row mt-5">
-							<h2>Categories</h2>
-							<table class="table">
-								<thead>
-								  <tr>
-									<th scope="col">ID#</th>
-									<th scope="col">Name</th>
-									<th scope="col">Add</th>
-									<th scope="col">Delete</th>
-								  </tr>
-								</thead>
-								<tbody>
-							<% for (let i=0; i< categories.length; i++) { %>
-								  <tr>
-									<th scope="row"><%=categories[i]._id %></th>
-									<td><%=categories[i].name %></td>
-									<td><button class="btn btn-lg btn-warning rounded-0 text-white" href="#"
-										data-toggle="modal" data-target="#addCategory"><span>
-											ADD</span></button></td>
-									<td><a href="/categories/<%= categories[i]._id %>?_method=DELETE" 
-										onclick="return confirm('ARE YOU SURE')"
-										class="btn btn-danger rounded-0 text-white"><span>DELETE</span></a></td>
-								  </tr>
-							<% } %>
-								</tbody>
-							  </table>
-
-						</div><!-- end row -->
-
-					</div><!-- end container -->
-				</div><!-- end section -->
-
-							<!-- ADD Modal -->
-
-				<!-- ADD User Modal -->
-			<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-				<div class="modal-content">
-				<div class="modal-body customer-box">
-					<!-- Tab panes -->
-					<div class="tab-content">
-						<div class="tab-pane active" id="AddUser">
-							<form method="POST" action="/users/create" class="form-horizontal">
-								<div class="form-group">
-									<div class="col-sm-12">
-										<input type="text" name="name" class="form-control" placeholder="Name" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-sm-12">
-										<input type="email" name="email" class="form-control" placeholder="Email" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-sm-12">
-										<input type="password" name="password" class="form-control" placeholder="Password" required>
-									</div>
-								</div>
-								<div class="form-group">
-									<div class="col-sm-12">
-										<select class="form-control" name="role">
-											<option value="student">Student</option>
-											<option value="teacher">Teacher</option>
-											<option value="admin">Admin</option>
-										</select>
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-10">
-										<button type="submit" class="btn btn-light btn-radius btn-brd grd1">
-											Submit
-										</button>
-										<button type="submit" class="btn btn-light btn-radius btn-brd grd1"
-											data-dismiss="modal" aria-hidden="true">
-											Cancel
-										</button>
-									</div>
-								</div>
-							</form>
-						</div>
+				<% } else if (flashMessages.error) { %>
+					<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						<%= flashMessages.error %>
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
-				</div>
-				</div>
-				</div>
-				</div>
-
-
-
-
-			<div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-				<div class="modal-content">
-				<div class="modal-body customer-box">
-					<!-- Tab panes -->
-					<div class="tab-content">
-						<div class="tab-pane active" id="Login">
-							<form method="POST" action="/categories" class="form-horizontal">
-								<div class="form-group">
-									<div class="col-sm-12">
-										<input type="text" name="name" class="form-control"  placeholder="Category Name">
-									</div>
-								</div>
-								<div class="row">
-									<div class="col-sm-10">
-										<button type="submit" class="btn btn-light btn-radius btn-brd grd1">
-											Submit
-										</button>
-										<button type="submit" class="btn btn-light btn-radius btn-brd grd1"
-											data-dismiss="modal" aria-hidden="true">
-											Cancel
-										</button>
-									</div>
-								</div>
-							</form>
-						</div>
-					</div>
-				</div>
-				</div>
-				</div>
-				</div>
-
+				<% } %>
 			<% } %>
 
+
+			<!-- USERS CARD -->
+			<div class="row mt-4">
+				<div class="col-lg-12">
+					<div class="card shadow mb-5" style="border: none;">
+						<div class="card-header d-flex justify-content-between align-items-center" style="background-color: #2c3e50;">
+							<h4 class="mb-0 text-white"><i class="fa fa-users mr-2"></i> Users</h4>
+							<button class="btn text-white" style="background-color: #27ae60;"
+								data-toggle="modal" data-target="#addUser">
+								<i class="fa fa-plus mr-1"></i> Add User
+							</button>
+						</div>
+						<div class="card-body p-0">
+							<table class="table table-hover mb-0">
+								<thead style="background-color: #34495e; color: #fff;">
+									<tr>
+										<th scope="col">#</th>
+										<th scope="col">Name</th>
+										<th scope="col">Email</th>
+										<th scope="col">Role</th>
+										<th scope="col" class="text-center">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% for (let i=0; i< users.length; i++) { %>
+									<tr>
+										<td><%= i + 1 %></td>
+										<td><%= users[i].name %></td>
+										<td><%= users[i].email %></td>
+										<td>
+											<% if(users[i].role === 'admin') { %>
+												<span class="badge p-2" style="background-color: #8e44ad; color: #fff;">Admin</span>
+											<% } else if(users[i].role === 'teacher') { %>
+												<span class="badge p-2" style="background-color: #2980b9; color: #fff;">Teacher</span>
+											<% } else { %>
+												<span class="badge p-2" style="background-color: #27ae60; color: #fff;">Student</span>
+											<% } %>
+										</td>
+										<td class="text-center">
+											<% if(users[i]._id.toString() !== user._id.toString()) { %>
+												<a href="/users/<%= users[i]._id %>?_method=DELETE"
+													onclick="return confirm('ARE YOU SURE?')"
+													class="btn btn-sm text-white" style="background-color: #e74c3c;">
+													<i class="fa fa-trash mr-1"></i> Delete
+												</a>
+											<% } else { %>
+												<span class="badge p-2" style="background-color: #f5a623; color: #fff;">You</span>
+											<% } %>
+										</td>
+									</tr>
+									<% } %>
+								</tbody>
+							</table>
+						</div>
+						<div class="card-footer" style="background-color: #ecf0f1; color: #2c3e50; font-weight: bold;">
+							Total: <%= users.length %> users
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- CATEGORIES CARD -->
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="card shadow mb-5" style="border: none;">
+						<div class="card-header d-flex justify-content-between align-items-center" style="background-color: #2c3e50;">
+							<h4 class="mb-0 text-white"><i class="fa fa-folder mr-2"></i> Categories</h4>
+							<button class="btn text-white" style="background-color: #27ae60;"
+								data-toggle="modal" data-target="#addCategory">
+								<i class="fa fa-plus mr-1"></i> Add Category
+							</button>
+						</div>
+						<div class="card-body p-0">
+							<table class="table table-hover mb-0">
+								<thead style="background-color: #34495e; color: #fff;">
+									<tr>
+										<th scope="col">#</th>
+										<th scope="col">Name</th>
+										<th scope="col" class="text-center">Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									<% for (let i=0; i< categories.length; i++) { %>
+									<tr>
+										<td><%= i + 1 %></td>
+										<td><%= categories[i].name %></td>
+										<td class="text-center">
+											<a href="/categories/<%= categories[i]._id %>?_method=DELETE"
+												onclick="return confirm('ARE YOU SURE?')"
+												class="btn btn-sm text-white" style="background-color: #e74c3c;">
+												<i class="fa fa-trash mr-1"></i> Delete
+											</a>
+										</td>
+									</tr>
+									<% } %>
+								</tbody>
+							</table>
+						</div>
+						<div class="card-footer" style="background-color: #ecf0f1; color: #2c3e50; font-weight: bold;">
+							Total: <%= categories.length %> categories
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div><!-- end container -->
+	</div><!-- end section -->
+
+	<!-- ADD User Modal -->
+	<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+		<div class="modal-body customer-box">
+			<div class="tab-content">
+				<div class="tab-pane active">
+					<form method="POST" action="/users/create" class="form-horizontal">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="text" name="name" class="form-control" placeholder="Name" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="email" name="email" class="form-control" placeholder="Email" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="password" name="password" class="form-control" placeholder="Password" required>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="col-sm-12">
+								<select class="form-control" name="role">
+									<option value="student">Student</option>
+									<option value="teacher">Teacher</option>
+									<option value="admin">Admin</option>
+								</select>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-10">
+								<button type="submit" class="btn btn-light btn-radius btn-brd grd1">
+									Submit
+								</button>
+								<button type="submit" class="btn btn-light btn-radius btn-brd grd1"
+									data-dismiss="modal" aria-hidden="true">
+									Cancel
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+
+	<!-- ADD Category Modal -->
+	<div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+		<div class="modal-content">
+		<div class="modal-body customer-box">
+			<div class="tab-content">
+				<div class="tab-pane active">
+					<form method="POST" action="/categories" class="form-horizontal">
+						<div class="form-group">
+							<div class="col-sm-12">
+								<input type="text" name="name" class="form-control" placeholder="Category Name" required>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-10">
+								<button type="submit" class="btn btn-light btn-radius btn-brd grd1">
+									Submit
+								</button>
+								<button type="submit" class="btn btn-light btn-radius btn-brd grd1"
+									data-dismiss="modal" aria-hidden="true">
+									Cancel
+								</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		</div>
+		</div>
+	</div>
+
+<% } %>
 
 		<% } %>
 
 <%- include('partials/_footer'); %>
-
-
-
-

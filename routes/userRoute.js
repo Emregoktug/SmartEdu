@@ -21,7 +21,15 @@ router.route('/signup').post(
         });
       }),
 
-    body('password').not().isEmpty().withMessage('Please Enter A Password'),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters')
+      .matches(/[a-z]/)
+      .withMessage('Password must contain a lowercase letter')
+      .matches(/[A-Z]/)
+      .withMessage('Password must contain an uppercase letter')
+      .matches(/[0-9]/)
+      .withMessage('Password must contain a number'),
   ],
 
   authController.createUser
@@ -30,7 +38,25 @@ router.route('/login').post(authController.loginUser);
 router.route('/logout').get(authController.logoutUser);
 router.route('/dashboard').get(authMiddleware, authController.getDashboardPage);
 //localhost:3000/users/dashboard
-router.route('/create').post(authMiddleware, authController.createUserByAdmin);
+router
+  .route('/create')
+  .post(
+    authMiddleware,
+    [
+      body('name').not().isEmpty().withMessage('Please Enter Name'),
+      body('email').isEmail().withMessage('Please Enter Valid Email'),
+      body('password')
+        .isLength({ min: 8 })
+        .withMessage('Password must be at least 8 characters')
+        .matches(/[a-z]/)
+        .withMessage('Password must contain a lowercase letter')
+        .matches(/[A-Z]/)
+        .withMessage('Password must contain an uppercase letter')
+        .matches(/[0-9]/)
+        .withMessage('Password must contain a number'),
+    ],
+    authController.createUserByAdmin
+  );
 
 router.route('/:id').delete(authController.deleteUser);
 
