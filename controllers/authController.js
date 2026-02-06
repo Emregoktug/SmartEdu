@@ -18,6 +18,12 @@ exports.createUser = async (req, res) => {
       return res.status(400).redirect('/register');
     }
 
+    // İlk kullanıcıysa admin yap
+    const userCount = await User.countDocuments();
+    if (userCount === 0) {
+      req.body.role = 'admin';
+    }
+
     // USER CREATE
     await User.create(req.body);
 
@@ -108,5 +114,18 @@ exports.deleteUser = async (req, res) => {
       status: 'fail',
       error,
     });
+  }
+};
+
+exports.createUserByAdmin = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    await User.create({ name, email, password, role });
+    req.flash('success', 'User created successfully!');
+    res.status(201).redirect('/users/dashboard');
+  } catch (error) {
+    console.log('ADMIN CREATE USER ERROR:', error);
+    req.flash('error', 'User could not be created!');
+    res.status(400).redirect('/users/dashboard');
   }
 };

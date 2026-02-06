@@ -283,6 +283,7 @@
 									<th scope="col">ID#</th>
 									<th scope="col">Email</th>
 									<th scope="col">Role</th>
+									<th scope="col">Add</th>
 									<th scope="col">Delete</th>
 								  </tr>
 								</thead>
@@ -292,10 +293,20 @@
 									<th scope="row"><%=users[i]._id %></th>
 									<td><%=users[i].email %></td>
 									<td><%=users[i].role %></td>
-									<td><a href="/users/<%= users[i]._id %>?_method=DELETE" 
-										onclick="return confirm('ARE YOU SURE')"
-										class="btn btn-danger rounded-0 text-white"><span>DELETE</span></a></td>
-								  </tr>
+									<td><button class="btn btn-lg btn-warning rounded-0 text-white" href="#"
+                    					data-toggle="modal" data-target="#addUser"><span>
+                        				ADD</span></button></td>
+
+									<td>
+  <% if(users[i]._id.toString() !== user._id.toString()) { %>
+    <a href="/users/<%= users[i]._id %>?_method=DELETE"
+      onclick="return confirm('ARE YOU SURE')"
+      class="btn btn-danger rounded-0 text-white"><span>DELETE</span></a>
+  <% } else { %>
+    <span class="btn btn-secondary rounded-0 text-white disabled"><span>YOU</span></span>
+  <% } %>
+</td>
+
 							<% } %>
 								</tbody>
 							  </table>
@@ -334,6 +345,62 @@
 				</div><!-- end section -->
 
 							<!-- ADD Modal -->
+
+				<!-- ADD User Modal -->
+			<div class="modal fade" id="addUser" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+				<div class="modal-content">
+				<div class="modal-body customer-box">
+					<!-- Tab panes -->
+					<div class="tab-content">
+						<div class="tab-pane active" id="AddUser">
+							<form method="POST" action="/users/create" class="form-horizontal">
+								<div class="form-group">
+									<div class="col-sm-12">
+										<input type="text" name="name" class="form-control" placeholder="Name" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<input type="email" name="email" class="form-control" placeholder="Email" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<input type="password" name="password" class="form-control" placeholder="Password" required>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12">
+										<select class="form-control" name="role">
+											<option value="student">Student</option>
+											<option value="teacher">Teacher</option>
+											<option value="admin">Admin</option>
+										</select>
+									</div>
+								</div>
+								<div class="row">
+									<div class="col-sm-10">
+										<button type="submit" class="btn btn-light btn-radius btn-brd grd1">
+											Submit
+										</button>
+										<button type="submit" class="btn btn-light btn-radius btn-brd grd1"
+											data-dismiss="modal" aria-hidden="true">
+											Cancel
+										</button>
+									</div>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+				</div>
+				</div>
+				</div>
+
+
+
+
 			<div class="modal fade" id="addCategory" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 				<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 				<div class="modal-content">
@@ -372,3 +439,7 @@
 		<% } %>
 
 <%- include('partials/_footer'); %>
+
+
+
+

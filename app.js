@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoStore = require('connect-mongo').default;
+const User = require('./models/User');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
 const pageRoute = require('./routes/pageRoute');
