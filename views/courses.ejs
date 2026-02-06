@@ -50,7 +50,7 @@
               <div class="course-meta-bot">
                 <ul>
                   <li>
-                    <i class="fa fa-user" aria-hidden="true"></i><%= courses[i].user.name %> 
+<i class="fa fa-user" aria-hidden="true"></i><%= courses[i].user ? courses[i].user.name : 'Unknown' %> 
                   </li>
                 </ul>
               </div>
