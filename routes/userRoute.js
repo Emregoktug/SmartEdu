@@ -31,4 +31,6 @@ router.route('/logout').get(authController.logoutUser);
 router.route('/dashboard').get(authMiddleware, authController.getDashboardPage);
 //localhost:3000/users/dashboard
 
-http: module.exports = router;
+router.route('/:id').delete(authController.deleteUser);
+
+module.exports = router;

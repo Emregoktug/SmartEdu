@@ -128,7 +128,7 @@ exports.releaseCourse = async (req, res) => {
 
 exports.deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findOneAndRemove({ slug: req.params.slug });
+    const course = await Course.findOneAndDelete({ slug: req.params.slug });
 
     req.flash('error', `${course.name} has been removed successfully`);
 
@@ -148,7 +148,7 @@ exports.updateCourse = async (req, res) => {
     course.description = req.body.description;
     course.category = req.body.category;
 
-    await course.save();
+    course.save();
 
     res.status(200).redirect('/users/dashboard');
   } catch (error) {
